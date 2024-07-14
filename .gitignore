@@ -1,2 +1,5 @@
 venv/**
 .env
+dataset/ddxplus
+dataset/mimic3
+dataset/HealthCareMagic-100k.json

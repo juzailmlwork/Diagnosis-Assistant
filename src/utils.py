@@ -15,7 +15,6 @@ def getDepartmentStatistics(df):
     print(prinicipal_diagnosis)
     preliminary_diagnosis=df["preliminary_diagnosis"].value_counts()
     print("number of preliminary_diagnosis are",len(prinicipal_diagnosis))
-    print(preliminary_diagnosis)
 
 def convert_string_to_list(s):
     pattern = r'\d+\.\s*'

@@ -5,3 +5,4 @@ dataset/mimic3
 dataset/HealthCareMagic-100k.json
 dataset/clinicallab
 dataset/medqa
+**/__pycache__

@@ -42,3 +42,36 @@ def doctor_prompt_disease_restricted_output_parser(medical_history, model, disea
     # print(json.dumps(parsed_output, indent=2))
 
     return True
+
+def doctor_prompt_disease_restricted_output_parser2(medical_history, model, diseases, department):
+    # Initialize the ChatOpenAI model
+    chat = ChatOpenAI(model_name=model, temperature=0.01)
+
+
+    # Create the system message
+    system_template = """
+    You are an experienced {department} clinician. Based on the given clinical case summary, please
+    analyze and provide a professional, detailed, and comprehensive clinical diagnosis, including the
+    following 3 parts:
+    1. Principal Diagnosis: The name of a disease that is most harmful to the patient’s physical health and
+    needs immediate treatment
+    2. Diagnostic Basis: List the basis for your preliminary diagnosis based on medical history,physical examination,
+    lab examination and image reports
+    3. Differential Diagnosis: List several diseases that could cause the patient’s current symptoms and
+    briefly explain why you exclude them. If you believe differential diagnosis is unnecessary, please
+    directly response “The diagnosis is clear and no differentiation is needed.”
+    Only select from this set of diseases {diseases}
+    The following is the given clinical case summary:
+    {case_summary}
+    Your clinical diagnosis:
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+    
+    messages = chat_prompt.format_prompt(
+        department=department,
+        diseases=diseases,
+        case_summary=json.dumps(medical_history)
+    ).to_messages()
+    response = chat(messages)
+    return response

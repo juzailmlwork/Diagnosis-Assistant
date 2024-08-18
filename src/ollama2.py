@@ -11,14 +11,10 @@ def doctor_prompt_disease_restricted_ollama(medical_history, model, diseases, de
     ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top 3 most likely diseases of the patient using differential diagnosis using given below diseases 
     the possible set of diseases are {diseases}
     Analyze by thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
-    Once it is done select the top 2 possible disease using above analysis and differential diagnosis
+    Once it is done select the top 3 possible disease using above analysis and differential diagnosis
     output should be formated as a list where each element is a dictionary.each element will have following fields
     1.disease-name:name of the disease based on above set
     2.reason:Detailed reason based on past history,physical examination,lab reports and image reports
-    Also give me your possible Doubts you have as a list which I will answer which will help you in diagnosis furthur
-    Question1
-    Question2
-    Question3
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 

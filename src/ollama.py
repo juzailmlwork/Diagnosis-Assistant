@@ -35,15 +35,28 @@ def doctor_prompt_disease_restricted_ollama_combined(medical_history, model, dia
 
 
     # Create the system message
-    system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient
-    and 2 clinical diagnosis from 2 different doctors. Your task is to identify the best disease based on the input from 2 different doctors 
-    Investrigate both the diagnosis based on your expert knowledge and come to the best possible conclusion.Also note that sometimes those doctors make 
-    mistakes too.I want you to thoroughly investrigate the case and use their views too
-    output should be dictionary with  following fields
-    1.disease-name:name of the disease based on above set
-    2.reason:reason based on past history,physical examination,lab reports and image reports
-    3.next-step:possible next examination needed to furthur confirm the disease
+    system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
+    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top 3 most likely diseases of the patient using differential diagnosis using given below diseases 
+    the possible set of diseases are {diseases}
+    Analyze by thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
+    Once it is done select the top possible disease using above analysis and differential diagnosis.I need you to not miss any examination reports and think step by step what each
+    examination report suggest
+    output should be formated in the following format
+    **Medical Examination Analysis**
+    ***Physical Examination***
+    ***Laboratory Examination:***
+    ***Imaging Examination***
     
+    **Differential Diagnosis**
+    1.disease1:Detailed reasons based on the case history
+    2.disease2:Detailed reasons based on the case history
+    3.disease3:Detailed reasons based on the case history
+    4.disease4:Detailed reasons based on the case history
+    
+    **Final Diagnosis""
+    ***Name of the most possible disease***
+    ****possible reasons****
+    Detailed reasons based on past medical history,physical examination,laboratory examination and image examination
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 

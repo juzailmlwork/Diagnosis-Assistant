@@ -2,10 +2,9 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 from langchain_ollama.llms import OllamaLLM
 import json
 
-def doctor_prompt_disease_restricted_ollama(medical_history, model, diseases, department):
-    model1=model
-    model = OllamaLLM(model=model,temperature=0.1,num_predict=1000,num_ctx=12000)#4096)
-
+def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases, department):
+    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1000,num_ctx=12000)#4096)
+    print("started model ",modelname)
 
     # Create the system message
     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
@@ -42,7 +41,7 @@ def doctor_prompt_disease_restricted_ollama(medical_history, model, diseases, de
     chain = chat_prompt | model
 
     results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
-    print("done for model",model1)
+    print("done for model",modelname)
     return results
 
 

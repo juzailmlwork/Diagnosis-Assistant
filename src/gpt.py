@@ -8,20 +8,19 @@ def doctor_prompt_disease_restricted_gpt(medical_history, model, diseases, depar
 
     # Create the system message
     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
-    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top 3 most likely diseases of the patient using differential diagnosis using given below diseases 
+    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top most likely diseases of the patient using differential diagnosis using given below diseases 
     the possible set of diseases are {diseases}
     Analyze by thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
     Once it is done select the top possible disease using above analysis and differential diagnosis
-    output should be formated as a list where each element is a dictionary.each element will have following fields
-    **Final Diagnosis""
-    ***Name of the most possible disease***
-    ****possible reasons****
-    medical-history:list of precise reasons you are confident about based on given medical case
-    Physical-Examination:list of precise reasons you are confident about based on given medical case
-    Laboratory-Examination:list of precise reasons you are confident about based on given medical case
-    Image-Examination:list of precise reasons you are confident about based on given medical case
-    Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
-    focus on the current most possible Disease dont talk about other diseases in the above list
+    
+    output should be formated in the below format
+    ##Final Diagnosis##:Name of the most possible disease within above set of diseases
+    ##reasons##:
+    medical-history:list of precise reasons you are confident about based on given medical history
+    Physical-Examination:list of precise reasons you are confident about based on Physical examination
+    Laboratory-Examination:list of precise reasons you are confident about based on Laboratory examination
+    Image-Examination:list of precise reasons you are confident about based on Image examination
+    Each reasonings should be precise and small.you can list any number of reasons you are confident about
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 

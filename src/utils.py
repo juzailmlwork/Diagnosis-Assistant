@@ -109,3 +109,50 @@ class PDF(FPDF):
         for model_name, diagnosis in diagnoses:
             self.add_page()
             self.chapter_body(model_name, diagnosis)
+def extract_lab_data(lab_data, field):
+    """
+    Extracts the specified field ('result' or 'abnormal') from the laboratory examination data.
+
+    :param lab_data: A dictionary containing laboratory examination data.
+    :param field: The field to extract ('result' or 'abnormal').
+    :return: A dictionary containing the extracted field data.
+    """
+    extracted_data = {}
+    
+    # Iterate over each test in the laboratory examination data
+    for test, data in lab_data.items():
+        if field in data:
+            extracted_data[test] = data[field]
+    
+    return extracted_data
+                        
+def select_case_components(departmentdf,rowNumber,required_fields,laboratory="result",image="findings"):
+    row = departmentdf.iloc[rowNumber]
+    case_id = row.id
+    clinical_case = row.clinical_case_summary
+    principal_diagnosis = row.principal_diagnosis
+    differential_diagnosis = row.differential_diagnosis
+    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis]
+    differential_diagnosis.append(principal_diagnosis)
+    try:
+        laboratory_examination = extract_lab_data(row.laboratory_examination,laboratory)
+    except:
+        laboratory_examination = "Not available."
+    try:
+        imageological_examination = extract_lab_data(row.imageological_examination,image)
+    except:
+        imageological_examination="Not available."
+    clinical_case_dict={
+    "Patient basic information":clinical_case['Patient Basic Information'],
+    "Chief complaint" : clinical_case['Chief Complaint'],
+    "Medical history" : clinical_case['Medical History'],
+    "Physical examination" : clinical_case['Physical Examination'],
+    "Laboratory examination" : laboratory_examination,
+    "Imageological examination" : imageological_examination,
+    "Auxillary examination": clinical_case['Auxiliary Examination'],
+    "Pathological examination" : row.pathological_examination
+    }
+    filtered_clinical_case_dict={}
+    for key in required_fields:
+        filtered_clinical_case_dict[key]=clinical_case_dict[key]
+    return case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict

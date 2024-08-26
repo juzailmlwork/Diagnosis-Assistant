@@ -8,19 +8,20 @@ def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases
 
     # Create the system message
     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
-    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top most likely diseases of the patient using differential diagnosis using given below diseases 
+    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top  most likely disease of the patient using differential diagnosis using given below diseases 
     the possible set of diseases are {diseases}
     Analyze by thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
     Once it is done select the top possible disease using above analysis and differential diagnosis
     
-    output should be formated in the below format
+    output should be formated in the following format
     ##Final Diagnosis##:Name of the most possible disease within above set of diseases
-    ##reasons##:
-    medical-history:list of precise reasons you are confident about based on given medical history
-    Physical-Examination:list of precise reasons you are confident about based on Physical examination
-    Laboratory-Examination:list of precise reasons you are confident about based on Laboratory examination
-    Image-Examination:list of precise reasons you are confident about based on Image examination
-    Each reasonings should be precise and small.you can list any number of reasons you are confident about
+    **Possible Reasons:**
+    - ****Medical History****: List of precise reasons based on the medical history.
+    - ****Physical Examination****: List of precise reasons based on the physical examination.
+    - ****Laboratory Examination****: List of precise reasons based on the laboratory examination.
+    - ****Imaging Examination****: List of precise reasons based on the imaging examination.
+    Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
+    focus on the current most possible Disease dont talk about other diseases in the above list
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
@@ -33,6 +34,41 @@ def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases
     chain = chat_prompt | model
 
     results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
+    print("done for model",modelname)
+    return results
+
+
+def doctor_prompt_disease_restricted_ollama_self_refinement(medical_history, modelname, diseases, department,diagnosis):
+    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)#4096)
+    print("started model ",modelname)
+
+    # Create the system message
+    system_template = """You are a experienced doctor from {department} and you have provided below diagnosis with reasons
+    for following clinical case of a patient containing the past medical history,physical examination,laboratory examination and Imaging examination
+    where you had to select the best possible disease out of {diseases}
+    Can you recheck step by step by comparing your diagnosis against patient clinical case 
+    1.Check whether each reasoning is true for the predicted disease
+    2.Is any diseases from {diseases} is more possible than currently detected disesase.If so change your diagnosis to new disease
+    
+    clinical History: {medical_history}
+    
+    your diagnosis: {diagnosis}
+        
+    Once you have rechecked your  diagnosis output should be formated in the following format
+    ##Final Diagnosis##:Name of the most possible disease within above set of diseases
+    **Possible Reasons:**
+    - ****Medical History****: List of new precise reasons based on the medical history.
+    - ****Physical Examination****: List of new precise reasons based on the physical examination.
+    - ****Laboratory Examination****: List of new precise reasons based on the laboratory examination.
+    - ****Imaging Examination****: List of new precise reasons based on the imaging examination.
+    Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
+    focus on the current most possible Disease dont talk about other diseases in the above list
+    """
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+    chain = chat_prompt | model
+
+    results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history),"diagnosis":diagnosis})
     print("done for model",modelname)
     return results
 
@@ -68,3 +104,53 @@ def doctor_prompt_disease_restricted_ollama_combined(medical_history, model, dia
 
     results=chain.invoke({"department": department,"diagnosis1": diagnosis1,"diagnosis2": diagnosis2,"medical_history":json.dumps(medical_history)})
     return results
+
+import json
+from langchain.llms import OllamaLLM
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
+from typing import List
+
+
+class DiagnosisResult(BaseModel):
+    final_diagnosis: str = Field(description="The most possible disease within the given set of diseases")
+    medical_history_reasons: List[str] = Field(description="List of precise reasons based on the medical history")
+    physical_examination_reasons: List[str] = Field(description="List of precise reasons based on the physical examination")
+    laboratory_examination_reasons: List[str] = Field(description="List of precise reasons based on the laboratory examination")
+    imaging_examination_reasons: List[str] = Field(description="List of precise reasons based on the imaging examination")
+
+def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases, department):
+    model = OllamaLLM(model=modelname, temperature=0.1, num_predict=1200, num_ctx=12000)
+    print("started model ", modelname)
+
+    parser = PydanticOutputParser(pydantic_object=DiagnosisResult)
+
+    system_template = """You are an experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history,
+    physical examination, laboratory examination and Imaging examination results. Your task is to identify the most likely disease of the patient using differential diagnosis from the given set of diseases:
+    {diseases}
+    
+    Analyze by thinking step by step each physical examination, laboratory examination and Imaging examination based on the above diseases.
+    Once it is done, select the most possible disease using the above analysis and differential diagnosis.
+    
+    {format_instructions}
+    
+    Output should be formatted as specified above. Each reasoning should be precise and concise. You can list any number of reasons you are confident about.
+    Only focus on the current most possible Disease; don't talk about other diseases in the above list.
+    """
+
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+
+    human_template = "Patient's medical history: {medical_history}"
+    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    
+    chain = chat_prompt | model | parser
+
+    results = chain.invoke({
+        "department": department,
+        "diseases": diseases,
+        "medical_history": json.dumps(medical_history),
+        "format_instructions": parser.get_format_instructions()
+    })

@@ -2,7 +2,7 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 from langchain_ollama.llms import OllamaLLM
 import json
 
-def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases, department):
+def doctor_prompt_ollama(medical_history, modelname, diseases, department):
     model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1200,num_ctx=12000)#4096)
     print("started model ",modelname)
 
@@ -38,7 +38,7 @@ def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases
     return results
 
 
-def doctor_prompt_disease_restricted_ollama_self_refinement(medical_history, modelname, diseases, department,diagnosis):
+def doctor_prompt_ollama(medical_history, modelname, diseases, department,diagnosis):
     model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)#4096)
     print("started model ",modelname)
 
@@ -73,7 +73,7 @@ def doctor_prompt_disease_restricted_ollama_self_refinement(medical_history, mod
     return results
 
 
-def doctor_prompt_disease_restricted_ollama_combined(medical_history, model, diagnosis1, diagnosis2,department):
+def doctor_prompt_ollama_combined(medical_history, model, diagnosis1, diagnosis2,department):
     model = OllamaLLM(model=model)
 
 
@@ -104,53 +104,3 @@ def doctor_prompt_disease_restricted_ollama_combined(medical_history, model, dia
 
     results=chain.invoke({"department": department,"diagnosis1": diagnosis1,"diagnosis2": diagnosis2,"medical_history":json.dumps(medical_history)})
     return results
-
-import json
-from langchain.llms import OllamaLLM
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field
-from typing import List
-
-
-class DiagnosisResult(BaseModel):
-    final_diagnosis: str = Field(description="The most possible disease within the given set of diseases")
-    medical_history_reasons: List[str] = Field(description="List of precise reasons based on the medical history")
-    physical_examination_reasons: List[str] = Field(description="List of precise reasons based on the physical examination")
-    laboratory_examination_reasons: List[str] = Field(description="List of precise reasons based on the laboratory examination")
-    imaging_examination_reasons: List[str] = Field(description="List of precise reasons based on the imaging examination")
-
-def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases, department):
-    model = OllamaLLM(model=modelname, temperature=0.1, num_predict=1200, num_ctx=12000)
-    print("started model ", modelname)
-
-    parser = PydanticOutputParser(pydantic_object=DiagnosisResult)
-
-    system_template = """You are an experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history,
-    physical examination, laboratory examination and Imaging examination results. Your task is to identify the most likely disease of the patient using differential diagnosis from the given set of diseases:
-    {diseases}
-    
-    Analyze by thinking step by step each physical examination, laboratory examination and Imaging examination based on the above diseases.
-    Once it is done, select the most possible disease using the above analysis and differential diagnosis.
-    
-    {format_instructions}
-    
-    Output should be formatted as specified above. Each reasoning should be precise and concise. You can list any number of reasons you are confident about.
-    Only focus on the current most possible Disease; don't talk about other diseases in the above list.
-    """
-
-    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-
-    human_template = "Patient's medical history: {medical_history}"
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-    
-    chain = chat_prompt | model | parser
-
-    results = chain.invoke({
-        "department": department,
-        "diseases": diseases,
-        "medical_history": json.dumps(medical_history),
-        "format_instructions": parser.get_format_instructions()
-    })

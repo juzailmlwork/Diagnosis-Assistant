@@ -2,7 +2,7 @@ import json
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
-def doctor_prompt_disease_restricted_gpt(medical_history, model, diseases, department):
+def doctor_prompt_gpt(medical_history, model, diseases, department):
     print("the model name is",model)
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1000)#0.01
 
@@ -42,7 +42,7 @@ def doctor_prompt_disease_restricted_gpt(medical_history, model, diseases, depar
     print("done for model",model)
     return response.content
 
-def doctor_prompt_disease_restricted_gpt_self_confinement(medical_history, model, diseases, department,diagnosis):
+def doctor_prompt_gpt_self_confinement(medical_history, model, diseases, department,diagnosis):
     print("the model name is",model)
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1000)#0.01
 

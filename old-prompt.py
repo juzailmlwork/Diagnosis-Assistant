@@ -179,3 +179,38 @@ for department in departments:
     Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
     focus on the current most possible Disease dont talk about other diseases in the above list
     """
+    
+    
+    
+    # Create the system message
+    # system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
+    # ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top  most likely disease of the patient using differential diagnosis using given below diseases 
+    # the possible set of diseases are {diseases}
+    # Analyze by thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
+    # Once it is done select the top possible disease using above analysis and differential diagnosis
+    
+    # output should be formated in the following format
+    # ##Final Diagnosis##:Name of the most possible disease within above set of diseases
+    # **Possible Reasons:**
+    # - ****Medical History****: List of precise reasons based on the medical history.
+    # - ****Physical Examination****: List of precise reasons based on the physical examination.
+    # - ****Laboratory Examination****: List of precise reasons based on the laboratory examination.
+    # - ****Imaging Examination****: List of precise reasons based on the imaging examination.
+    # Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
+    # focus on the current most possible Disease dont talk about other diseases in the above list
+    # """
+    # system_template = """You are a experienced doctor from {department} and you will be provided with a medical case of a patient containing the past medical history
+    # ,physical examination,laboratory examination and imaging examination results.Your task is to identify the top  most likely disease of the patient using differential diagnosis using given below diseases 
+    # the possible set of diseases are {diseases}
+    # Solve the medical case by thinking step by step 
+    # 1.Summarize the medical case
+    # 2.Understand How each physical examination,laboratory examination and Imaging examination help detecting above set of disases
+    # 3.Furthur tests that need to be done to furthur confirm the diagnosis
+    # 4.Select the best possible disease
+    # 5.Format the final answer in the below format
+    # - final_diagnosis: Name of the most possible disease within the above set of diseases.
+    # - reasons:list  associated reasons for the final diagnosis. Each reason should be precise and brief and based on true facts.
+    # - furthur tests: list of accurate furthur tests that need to be done to confirm the disases
+    # Once done with analysis,select the top possible disease using above analysis
+    
+    # """

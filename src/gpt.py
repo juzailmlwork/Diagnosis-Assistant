@@ -2,12 +2,50 @@ import json
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
+def doctor_prompt_gpt_semi_ended(medical_history, model, diseases, department):
+    chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1500)
+    system_template = """
+    You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. 
+    Your task is to identify the top 2 most likely diseases of the patient using differential diagnosis from the below given list of diseases:
+
+    Patient's medical case: {medical_history}
+    
+    The possible set of diseases are {diseases}.These diseases belongs to {department}
+
+    Solve the medical case by thinking step by step:
+
+    1. **Summarize the medical case.**
+
+    2. **Medical case Analysis**: Understand how each physical examination, laboratory examination, and imaging examination help in detecting the diseases mentioned above.
+
+    3. **Select the 2 Best Possible Diseases**: Choose the most 2 likely diseases based on the given medical case
+    
+    4  **Select the best possible disease**: Choose the best possible disease from above 4 likely diseases after rechecking the case
+
+    5. **Format the Disease** in the below format:
+        = **Best possible Disease**:Name of the best possible disease
+            -**Reasons**:List associated reasons for the above selection.Each reason should be precise, brief, and based on true facts.
+    """ 
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+
+    # Format the messages
+    messages = chat_prompt.format_prompt(
+        department=department,
+        diseases=diseases,
+        medical_history=json.dumps(medical_history)
+    ).to_messages()
+    response = chat(messages)
+    return response.content
+
 def doctor_prompt_gpt_intrinsic_knowledge(medical_history, model, diseases, department):
-    print("the model name is",model)
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1500)
     system_template = """
     You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. Your task is to identify the top most likely disease of the patient using differential diagnosis from the given list of diseases:
 
+    Patient's medical case: {medical_history}
+    
     The possible set of diseases are {diseases}.
 
     Solve the medical case by thinking step by step:
@@ -30,12 +68,7 @@ def doctor_prompt_gpt_intrinsic_knowledge(medical_history, model, diseases, depa
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
-    # Create the human message
-    human_template = "Patient's medical history: {medical_history}"
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-
-    # Create the chat prompt
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
 
     # Format the messages
     messages = chat_prompt.format_prompt(
@@ -44,19 +77,17 @@ def doctor_prompt_gpt_intrinsic_knowledge(medical_history, model, diseases, depa
         medical_history=json.dumps(medical_history)
     ).to_messages()
     response = chat(messages)
-    print("done for model",model)
     return response.content
 
 def doctor_prompt_gpt_COT(medical_history, model, diseases, department):
-    print("the model name is",model)
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1500)#0.01
     
     system_template = """
     You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. Your task is to identify the top most likely disease of the patient using differential diagnosis from the given list of diseases:
-
-    The possible set of diseases are {diseases}.
     
     Patient's medical case: {medical_history}
+    
+    The possible set of diseases are {diseases}.
 
     Solve the medical case by thinking step by step:
 
@@ -87,17 +118,18 @@ def doctor_prompt_gpt_COT(medical_history, model, diseases, department):
         medical_history=json.dumps(medical_history)
     ).to_messages()
     response = chat(messages)
-    print("done for model",model)
     return response.content
 
 
 def doctor_prompt_gpt_single_shot(medical_history, model, diseases, department):
-    print("the model name is",model)
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1000)#0.01
 
     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
     ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top  most likely disease of the patient 
-    the possible set of diseases are {diseases}
+    
+    Patient's medical case: {medical_history}
+    
+    The possible set of diseases are {diseases}.
     
     Answer:Most possible disease
     """
@@ -118,7 +150,6 @@ def doctor_prompt_gpt_single_shot(medical_history, model, diseases, department):
         medical_history=json.dumps(medical_history)
     ).to_messages()
     response = chat(messages)
-    print("done for model",model)
     return response.content
 
 def doctor_prompt_gpt_open_ended(medical_history, model, diseases, department):
@@ -126,11 +157,10 @@ def doctor_prompt_gpt_open_ended(medical_history, model, diseases, department):
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1000)#0.01
 
     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient containing the past medical history
-    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top 2 most likely diseases of the patient using differential diagnosis
+    ,physical examination,laboratory examination and Imaging examination results.Your task is to identify the top 4 most likely diseases of the patient using differential diagnosis
     from diseases occuring at {department}
-    First analyze the medical caseby thinking step by step each physical examination,laboratory examination and Imaging examination based on above disases
-    Once it is done select the top 2 possible diseases using above analysis and differential diagnosis
-    For each disease you have selected give the possible reasons also.make sure you are confident about the diseases
+    What are the top 4 most likely diagnoses? Be precise, listing one diagnosis per line, and try to cover many unique possibilities 
+    The top 4 diagnoses are:
     """
     
     # system_template = """You are a experienced doctor from {department} and you will be provided with a medical case of a patient containing the past medical history

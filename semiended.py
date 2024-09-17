@@ -6,7 +6,7 @@ from src.gpt import doctor_prompt_gpt_semi_ended
 from src.utils import convert_string_to_list,convert_clinical_case_summary,filterDepartment,getDepartmentStatistics,select_case_components
 from src.ollama import doctor_prompt_ollama_semi_ended
 import os
-os.environ["OPENAI_API_KEY"]="sk-proj-Vh1dqqVzVshG02wzYTPTT3BlbkFJE5oRPnfaHMi5p5yRZNuZ"
+# 
 print(os.getenv("OPENAI_API_KEY"))
 filePath="dataset/clinicallab/data_en.json"
 with open(filePath, 'r', encoding='utf-8') as f:

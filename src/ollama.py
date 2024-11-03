@@ -137,7 +137,7 @@ def doctor_prompt_ollama(medical_history, modelname, diseases, department):
     print("done for model",modelname)
     return results
 
-def doctor_prompt_ollama_openended(medical_history, modelname, diseases, department):
+def doctor_prompt_ollama_openended(medical_history, modelname, department):
     model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1200,num_ctx=12000)#4096)
     print("started model ",modelname)
 

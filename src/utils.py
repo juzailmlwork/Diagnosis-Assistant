@@ -1,5 +1,10 @@
 import re
 import os
+import pandas as pd
+pd.set_option('display.max_colwidth', 5000)
+import json
+from src.gpt import doctor_prompt_gpt_open_ended,doctor_prompt_gpt_semi_ended
+from src.ollama import doctor_prompt_ollama,doctor_prompt_ollama_openended,doctor_prompt_ollama_semi_ended
 
 def filterDepartment(df,department):
     allDepartments=df["clinical_department"].unique().tolist()
@@ -156,3 +161,96 @@ def select_case_components(departmentdf,rowNumber,required_fields,laboratory="re
     for key in required_fields:
         filtered_clinical_case_dict[key]=clinical_case_dict[key]
     return case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict
+
+
+    
+def load_preprocess_data(filePath):
+        with open(filePath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+        print("\nnumber of total cases are",len(data))
+        print("\neach case have the following fields",list(data[0].keys()))
+
+        keys_to_include = ["id",'clinical_department', 'principal_diagnosis', 'preliminary_diagnosis',
+                        'diagnostic_basis', 'differential_diagnosis', 
+                        'treatment_plan', 'clinical_case_summary', 'imageological_examination', 
+                        'laboratory_examination', 'pathological_examination', 'therapeutic_principle']
+        df = pd.DataFrame([{key: d[key] for key in keys_to_include} for d in data])
+
+        allDepartmentsCount=df['clinical_department'].value_counts()
+        print("\nnumber of departments available are",len(allDepartmentsCount))
+        print("\n all the departments available are")
+        print(allDepartmentsCount)
+
+        df['preliminary_diagnosis'] = df['preliminary_diagnosis'].apply(convert_string_to_list)
+        df['diagnostic_basis'] = df['diagnostic_basis'].apply(convert_string_to_list)
+        df['differential_diagnosis'] = df['differential_diagnosis'].apply(convert_string_to_list)
+        df['treatment_plan'] = df['treatment_plan'].apply(convert_string_to_list)
+        df["clinical_case_summary"] = df["clinical_case_summary"].apply(convert_clinical_case_summary)
+        
+        return df
+    
+    
+    
+def extract_disease_names_from_row(differential_diagnosis_list):
+    disease=[entry.split(":")[0].strip() for entry in differential_diagnosis_list]
+    return disease
+
+def extract_all_diseases_per_department(departmentdf,max_len_disease=40):
+    differential_diseases = departmentdf["differential_diagnosis"].apply(extract_disease_names_from_row).sum()
+    refined_differential_diseases=[]
+    for disease in differential_diseases:
+        if len(disease) <max_len_disease:
+            refined_differential_diseases.append(disease)
+    uniqueDiseases=departmentdf["principal_diagnosis"].unique().tolist()
+    uniquePrimary=uniqueDiseases[:]
+    uniqueDiseases.extend(refined_differential_diseases)
+    uniqueDiseases = [item.lower() for item in uniqueDiseases]
+    uniqueDiseases = sorted(set(uniqueDiseases))
+
+    print("number of unique diseases are",len(uniqueDiseases))
+    print(len(uniqueDiseases))
+    print(uniqueDiseases)
+    return uniqueDiseases
+
+
+def run_prediction(df,departments,models=[],type="semi_ended",laboratory_examination="result",image_examination="findings",skip=6):
+    required_fields=[ "Patient basic information",
+                 "Chief complaint",
+                 "Medical history",
+                 "Physical examination",
+                 "Laboratory examination",
+                 "Imageological examination",
+                 "Auxillary examination",
+                 "Pathological examination"
+    
+]
+    report_type=f"{laboratory_examination}_{image_examination}"
+    for i  in range(len(departments)):
+        department=departments[i]
+        results={}
+        print("department is",department)
+        departmentdf=filterDepartment(df,department)
+        caseNumbers = [i for i in range(1, len(departmentdf), skip)]
+        print(caseNumbers)
+        getDepartmentStatistics(departmentdf)
+        for caseNumber in caseNumbers:
+            case_details={}        
+            case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict=select_case_components(departmentdf,caseNumber,required_fields,laboratory_examination,image_examination)
+            case_details["original"]={"main-diagnosis":principal_diagnosis,"differential_diagnosis":differential_diagnosis}
+            print("case_id",case_id)
+            print("principal diagnosis",principal_diagnosis)
+            if type=="semi_ended":
+                output0=doctor_prompt_gpt_semi_ended(filtered_clinical_case_dict,"gpt-4",differential_diagnosis,department)
+                output1=doctor_prompt_ollama_semi_ended(filtered_clinical_case_dict,"llama3.1",differential_diagnosis,department)
+                output2=doctor_prompt_ollama_semi_ended(filtered_clinical_case_dict,"gemma2",differential_diagnosis,department)
+            elif type=="open_ended":    
+                output0=doctor_prompt_gpt_open_ended(filtered_clinical_case_dict,"gpt-4",department)
+                output1=doctor_prompt_ollama_openended(filtered_clinical_case_dict,"llama3.1",department)
+                output2=doctor_prompt_ollama_openended(filtered_clinical_case_dict,"gemma2",department)
+            
+            case_details["gpt-4"]=output0
+            case_details["llama3.1"]=output1
+            case_details["gemma2"]=output2
+            results[str(case_id)]=case_details
+        with open(f"{department}_{type}_{report_type}.json", "w") as outfile: 
+            json.dump(results, outfile)

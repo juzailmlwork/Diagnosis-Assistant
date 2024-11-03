@@ -1,43 +1,6 @@
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_ollama.llms import OllamaLLM
 import json
-
-def doctor_prompt_ollama_semi_ended(medical_history, modelname, diseases, department):
-    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)
-    print("started model ",modelname)
-
-    system_template = """
-    You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. 
-    Your task is to identify the top 2 most likely diseases of the patient using differential diagnosis from the below given list of diseases:
-
-    Patient's medical case: {medical_history}
-    
-    The possible set of diseases are {diseases}.These diseases belongs to {department}
-
-    Solve the medical case by thinking step by step:
-
-    1. **Summarize the medical case.**
-
-    2. **Medical case Analysis**: Understand how each physical examination, laboratory examination, and imaging examination help in detecting the diseases mentioned above.
-
-    3. **Select the 2 Best Possible Diseases**: Choose the most 2 likely diseases based on the given medical case
-    
-    4  **Select the best possible disease**: Choose the best possible disease from above 2 likely diseases after rechecking the case
-
-    5. **Format the Disease** in the below format:
-        = **Best possible Disease**:Name of the best possible disease
-            -**Reasons**:List associated reasons for the above selection.Each reason should be precise, brief, and based on true facts.
-    """  
-    
-    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
-    chain = chat_prompt | model
-
-    results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
-    print("done for model",modelname)
-    return results
-
 def doctor_prompt_ollama(medical_history, modelname, diseases, department):
     model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)#4096)
     print("started model ",modelname)
@@ -79,6 +42,43 @@ def doctor_prompt_ollama(medical_history, modelname, diseases, department):
     results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
     print("done for model",modelname)
     return results
+
+def doctor_prompt_ollama_semi_ended(medical_history, modelname, diseases, department):
+    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)
+    print("started model ",modelname)
+
+    system_template = """
+    You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. 
+    Your task is to identify the top 2 most likely diseases of the patient using differential diagnosis from the below given list of diseases:
+
+    Patient's medical case: {medical_history}
+    
+    The possible set of diseases are {diseases}.These diseases belongs to {department}
+
+    Solve the medical case by thinking step by step:
+
+    1. **Summarize the medical case.**
+
+    2. **Medical case Analysis**: Understand how each physical examination, laboratory examination, and imaging examination help in detecting the diseases mentioned above.
+
+    3. **Select the 2 Best Possible Diseases**: Choose the most 2 likely diseases based on the given medical case
+    
+    4  **Select the best possible disease**: Choose the best possible disease from above 2 likely diseases after rechecking the case
+
+    5. **Format the Disease** in the below format:
+        = **Best possible Disease**:Name of the best possible disease
+            -**Reasons**:List associated reasons for the above selection.Each reason should be precise, brief, and based on true facts.
+    """  
+    
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+    chain = chat_prompt | model
+
+    results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
+    print("done for model",modelname)
+    return results
+
 
 def doctor_prompt_ollama_openended(medical_history, modelname, department):
     model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1200,num_ctx=12000)#4096)
@@ -154,7 +154,6 @@ def doctor_prompt_ollama_combined(medical_history, model, diagnosis1, diagnosis2
     output should be dictionary with  following fields
     1.disease-name:name of the disease based on above set
     2.reason:reason based on past history,physical examination,lab reports and image reports
-    3.next-step:possible next examination needed to furthur confirm the disease
     
     """
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)

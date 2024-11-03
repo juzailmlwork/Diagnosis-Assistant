@@ -20,7 +20,7 @@ def doctor_prompt_gpt_semi_ended(medical_history, model, diseases, department):
 
     3. **Select the 2 Best Possible Diseases**: Choose the most 2 likely diseases based on the given medical case
     
-    4  **Select the best possible disease**: Choose the best possible disease from above 4 likely diseases after rechecking the case
+    4  **Select the best possible disease**: Choose the best possible disease from above 2 likely diseases after rechecking the case
 
     5. **Format the Disease** in the below format:
         = **Best possible Disease**:Name of the best possible disease

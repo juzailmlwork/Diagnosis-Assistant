@@ -3,7 +3,7 @@ from langchain_ollama.llms import OllamaLLM
 import json
 
 def doctor_prompt_ollama_semi_ended(medical_history, modelname, diseases, department):
-    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)#4096)
+    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)
     print("started model ",modelname)
 
     # system_template = """

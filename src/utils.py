@@ -18,7 +18,6 @@ def getDepartmentStatistics(df):
     prinicipal_diagnosis=df["principal_diagnosis"].value_counts()
     print("number of principal diagnosis are",len(prinicipal_diagnosis))
     print(prinicipal_diagnosis)
-    preliminary_diagnosis=df["preliminary_diagnosis"].value_counts()
     print("number of preliminary_diagnosis are",len(prinicipal_diagnosis))
 
 def convert_string_to_list(s):
@@ -80,40 +79,6 @@ def convert_cases_to_json(df,folder_name):
         row_df.to_json(file_path, orient='records', lines=False, indent=4)
     print("done saving the json file")
     
-    
-from fpdf import FPDF
-
-class PDF(FPDF):
-    def header(self):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Medical Case Report', 0, 1, 'C')
-
-    def chapter_title(self, case_id):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, f'Case ID: {case_id}', 0, 1, 'L')
-        self.ln(5)
-
-    def chapter_body(self, model_name, diagnosis):
-        self.set_font('Arial', '', 12)
-        self.multi_cell(0, 10, f'Diagnosis from {model_name}: {diagnosis}'.encode('latin-1', 'replace').decode('latin-1'))
-        self.ln(10)
-
-    def add_case(self, case_id, principalDiagnosis, differentialDiagnosis, medicalHistory, diagnoses):
-        self.add_page()
-        self.chapter_title(case_id)
-
-        self.set_font('Arial', '', 12)
-        self.multi_cell(0, 10, f'Principal Diagnosis: {principalDiagnosis}'.encode('latin-1', 'replace').decode('latin-1'))
-        self.ln(5)
-        self.multi_cell(0, 10, f'Differential Diagnosis: {differentialDiagnosis}'.encode('latin-1', 'replace').decode('latin-1'))
-        self.ln(5)
-        self.multi_cell(0, 10, f'Medical History: {medicalHistory}'.encode('latin-1', 'replace').decode('latin-1'))
-        self.ln(10)
-
-        # Add a page for each diagnosis
-        for model_name, diagnosis in diagnoses:
-            self.add_page()
-            self.chapter_body(model_name, diagnosis)
 def extract_lab_data(lab_data, field):
     """
     Extracts the specified field ('result' or 'abnormal') from the laboratory examination data.
@@ -202,7 +167,6 @@ def extract_all_diseases_per_department(departmentdf,max_len_disease=40):
         if len(disease) <max_len_disease:
             refined_differential_diseases.append(disease)
     uniqueDiseases=departmentdf["principal_diagnosis"].unique().tolist()
-    uniquePrimary=uniqueDiseases[:]
     uniqueDiseases.extend(refined_differential_diseases)
     uniqueDiseases = [item.lower() for item in uniqueDiseases]
     uniqueDiseases = sorted(set(uniqueDiseases))

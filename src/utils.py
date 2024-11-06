@@ -243,6 +243,6 @@ def evaluate_department_results(data):
             result=str(output[1])
             results[model][result.lower()].append(caseNumber)
             results[model][f'count_{result.lower()}'] += 1
-            results[model]["predicted"].append(str(output[1]).lower())
+            results[model]["predicted"].append(str(output[0]).lower())
 
     return results

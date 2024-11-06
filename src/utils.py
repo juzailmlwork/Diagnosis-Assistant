@@ -100,8 +100,9 @@ def select_case_components(departmentdf,rowNumber,required_fields,laboratory="re
     clinical_case = row.clinical_case_summary
     principal_diagnosis = row.principal_diagnosis
     differential_diagnosis = row.differential_diagnosis
-    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis]
+    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis if len(entry)<40]
     differential_diagnosis.append(principal_diagnosis)
+    # differential_diagnosis.sort()
     try:
         laboratory_examination = extract_lab_data(row.laboratory_examination,laboratory)
     except:

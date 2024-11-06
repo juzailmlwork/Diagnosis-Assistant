@@ -12,17 +12,6 @@ Clinical case summary: {medical_history}
 
     """
 
-with_reasons_prompt= """
-    You are an experienced doctor, and you will be provided with the clinical case summary of a patient containing past medical history,
-    physical examination, laboratory examination, and imaging examination results. 
-    clinical case summary: {medical_history}.
-    
-    Your task is to identify the most likely disease of the patient using differential diagnosis from the these diseases: {diseases}.
-
-    Please format your response as a JSON object with the following fields:
-    - final_diagnosis: Name of the most possible disease within the above set of diseases.
-    - reasons: A list of categories (e.g., medical-history, Physical-Examination) with associated reasons for the final diagnosis. Each reason should be precise and brief.
-    """
 with_reasons_prompt="""
 You are an experienced doctor, and you will be provided with a clinical case summary of a patient, including:
 
@@ -30,6 +19,7 @@ You are an experienced doctor, and you will be provided with a clinical case sum
 - Physical examination findings
 - Laboratory examination results
 - Imaging examination results
+- Pathological examination results
 
 Clinical case summary: {medical_history}
 

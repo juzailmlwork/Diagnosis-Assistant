@@ -204,6 +204,7 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
             case_details={}        
             case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict=select_case_components(departmentdf,caseNumber,required_fields,laboratory_examination,image_examination)
             case_details["original"]={"main-diagnosis":principal_diagnosis,"differential_diagnosis":differential_diagnosis}
+            case_details["predictions"]={}
             print("case_id",case_id)
             # print("principal diagnosis",principal_diagnosis)
             for model in models:
@@ -211,13 +212,15 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
                     output=doctor_prompt_gpt(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
                 else:
                     output=doctor_prompt_ollama(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
-                case_details[model]=output
+                case_details["predictions"][model]=output
             results[str(case_id)]=case_details
         with open(f"results/{department}_{type}_{report_type}.json", "w") as outfile: 
             json.dump(results, outfile)
             
             
 def evaluate_results(data):
+    models=list(data[list(data.keys())[0]]["predictions"].keys())
+    print(models)
     results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0} for model in models}
 
     # Iterate through each case in the data
@@ -226,7 +229,7 @@ def evaluate_results(data):
         
         # Evaluate predictions for each model
         for model in results.keys():
-            predicted = case[model]
+            predicted = case["predictions"][model]
             output = list(evaluate_gpt(ground_truth_disease, predicted))
             result=str(output[1])
             results[model][result.lower()].append(caseNumber)

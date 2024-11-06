@@ -1,5 +1,5 @@
 single_shot_disease_only_prompt="""
-    You are an experienced doctor specializing in {department}. You will be provided with a clinical case summary of a patient, including:
+    You are an experienced doctor from {department}. You will be provided with a clinical case summary of a patient, including:
 - Past medical history
 - Physical examination findings
 - Laboratory and imaging examination results
@@ -13,7 +13,7 @@ Clinical case summary: {medical_history}
     """
 
 with_reasons_prompt="""
-You are an experienced doctor, and you will be provided with a clinical case summary of a patient, including:
+You are an experienced doctor from {department}, and you will be provided with a clinical case summary of a patient, including:
 
 - Past medical history
 - Physical examination findings
@@ -78,15 +78,10 @@ self_refinement_prompt="""You are a experienced doctor from {department} and you
     
     your diagnosis: {diagnosis}
         
-    Once you have rechecked your  diagnosis output should be formated in the following format
-    ##Final Diagnosis##:Name of the most possible disease within above set of diseases
-    **Possible Reasons:**
-    - ****Medical History****: List of new precise reasons based on the medical history.
-    - ****Physical Examination****: List of new precise reasons based on the physical examination.
-    - ****Laboratory Examination****: List of new precise reasons based on the laboratory examination.
-    - ****Imaging Examination****: List of new precise reasons based on the imaging examination.
-    Each reasonings should be precise and small.you can list any number of reasons you are confident about.Only
-    focus on the current most possible Disease dont talk about other diseases in the above list
+    Once you have rechecked your  diagnosis Format your response as a JSON object with these fields:        
+    - **final_diagnosis**: Name of the most likely disease from the provided set.
+    - **reasons**: An array of categories (e.g., medical-history, physical-examination) with a brief, precise explanation for each category that supports the diagnosis.
+
     """
 
     

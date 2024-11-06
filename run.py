@@ -21,11 +21,11 @@ departments=["nephrology department",
              "gastrointestinal surgical department",
              "respiratory medicine department",
             ]
-models = ["gpt-4","llama3.1","gemma2"]
-# type="with_reasons"
-# prompt=with_reasons_prompt
-type="single_shot_without_sorted"
-prompt=single_shot_disease_only_prompt
+models = ["gpt-4","llama3.1","gemma2"]#,"mistral-nemo","phi3:14b"]#]
+type="with_reasons"
+prompt=with_reasons_prompt
+# type="single_shot"
+# prompt=single_shot_disease_only_prompt
 # type="open_ended"
 # prompt=open_ended__top4_prompt# 
 run_prediction(df,prompt,departments,models=models,type=type,skip=5)

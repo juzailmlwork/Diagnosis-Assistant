@@ -229,7 +229,7 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
 def evaluate_department_results(data):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
     print(models)
-    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"predicted":[]} for model in models}
+    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"predicted":[],"ground_truth":[]} for model in models}
 
     # Iterate through each case in the data
     for caseNumber, case in data.items():
@@ -244,5 +244,6 @@ def evaluate_department_results(data):
             results[model][result.lower()].append(caseNumber)
             results[model][f'count_{result.lower()}'] += 1
             results[model]["predicted"].append(str(output[0]).lower())
+            results[model]["ground_truth"].append(ground_truth_disease.lower())
 
     return results

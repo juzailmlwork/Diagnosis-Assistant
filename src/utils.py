@@ -3,6 +3,8 @@ import os
 import pandas as pd
 pd.set_option('display.max_colwidth', 5000)
 import json
+from src.ollama import doctor_prompt_ollama
+from src.gpt import doctor_prompt_gpt,evaluate_gpt
 
 def filterDepartment(df,department):
     allDepartments=df["clinical_department"].unique().tolist()
@@ -100,9 +102,10 @@ def select_case_components(departmentdf,rowNumber,required_fields,laboratory="re
     clinical_case = row.clinical_case_summary
     principal_diagnosis = row.principal_diagnosis
     differential_diagnosis = row.differential_diagnosis
-    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis if len(entry)<40]
+    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis if len(entry.split(":")[0]) < 40]
     differential_diagnosis.append(principal_diagnosis)
-    # differential_diagnosis.sort()
+    differential_diagnosis = [item.capitalize() for item in differential_diagnosis]
+    differential_diagnosis.sort()
     try:
         laboratory_examination = extract_lab_data(row.laboratory_examination,laboratory)
     except:
@@ -176,7 +179,8 @@ def extract_all_diseases_per_department(departmentdf,max_len_disease=40):
     return uniqueDiseases
 
 
-def run_prediction(df,departments,models=[],type="semi_ended",laboratory_examination="result",image_examination="findings",skip=6):
+def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_examination="result",
+                   image_examination="findings",skip=6):
     required_fields=[ "Patient basic information",
                  "Chief complaint",
                  "Medical history",
@@ -201,19 +205,31 @@ def run_prediction(df,departments,models=[],type="semi_ended",laboratory_examina
             case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict=select_case_components(departmentdf,caseNumber,required_fields,laboratory_examination,image_examination)
             case_details["original"]={"main-diagnosis":principal_diagnosis,"differential_diagnosis":differential_diagnosis}
             print("case_id",case_id)
-            print("principal diagnosis",principal_diagnosis)
-            if type=="semi_ended":
-                output0=doctor_prompt_gpt_semi_ended(filtered_clinical_case_dict,"gpt-4",differential_diagnosis,department)
-                output1=doctor_prompt_ollama_semi_ended(filtered_clinical_case_dict,"llama3.1",differential_diagnosis,department)
-                output2=doctor_prompt_ollama_semi_ended(filtered_clinical_case_dict,"gemma2",differential_diagnosis,department)
-            elif type=="open_ended":    
-                output0=doctor_prompt_gpt_open_ended(filtered_clinical_case_dict,"gpt-4",department)
-                output1=doctor_prompt_ollama_openended(filtered_clinical_case_dict,"llama3.1",department)
-                output2=doctor_prompt_ollama_openended(filtered_clinical_case_dict,"gemma2",department)
-            
-            case_details["gpt-4"]=output0
-            case_details["llama3.1"]=output1
-            case_details["gemma2"]=output2
+            # print("principal diagnosis",principal_diagnosis)
+            for model in models:
+                if model=="gpt-4":
+                    output=doctor_prompt_gpt(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
+                else:
+                    output=doctor_prompt_ollama(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
+                case_details[model]=output
             results[str(case_id)]=case_details
-        with open(f"{department}_{type}_{report_type}.json", "w") as outfile: 
+        with open(f"results/{department}_{type}_{report_type}.json", "w") as outfile: 
             json.dump(results, outfile)
+            
+            
+def evaluate_results(data):
+    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0} for model in models}
+
+    # Iterate through each case in the data
+    for caseNumber, case in data.items():
+        ground_truth_disease = case["original"]["main-diagnosis"]
+        
+        # Evaluate predictions for each model
+        for model in results.keys():
+            predicted = case[model]
+            output = list(evaluate_gpt(ground_truth_disease, predicted))
+            result=str(output[1])
+            results[model][result.lower()].append(caseNumber)
+            results[model][f'count_{result.lower()}'] += 1
+
+    return results

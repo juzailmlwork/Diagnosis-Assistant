@@ -84,3 +84,30 @@ def doctor_prompt_ollama(prompt,medical_history, modelname, diseases, department
 #         }
 #     )
 #     return output
+
+
+def evaluate_ollama(ground_truth_disease, prediction):
+
+    system_template = """
+You are an assistant that compares the ground truth and predicted disease. You will be provided 
+with a prediction from an AI model. Your task is to extract the best possible disease from the prediction text 
+and compare it with the ground truth. First, extract the best possible disease given in the prediction text. Do not do anything else.
+If the extracted the best possible disease and the ground truth are the same, set the value of final to True; otherwise, set it to False.
+
+Return a list in the exact format: ["best_possible_disease", final].
+Do not use variables, extra text, or any additional characters. Only return the list.make sure final is a boolean
+
+The ground truth is: {ground_truth_disease}
+The predicted text is: {prediction}
+"""
+
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+    model = OllamaLLM(model="gemma2",temperature=0.1,num_predict=40,num_ctx=4096)
+    
+    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
+    chain = chat_prompt | model
+    response=chain.invoke({"ground_truth_disease": ground_truth_disease,"prediction": prediction})    
+    print(ground_truth_disease,response)
+    return eval(response)

@@ -3,7 +3,7 @@ import os
 import pandas as pd
 pd.set_option('display.max_colwidth', 5000)
 import json
-from src.ollama import doctor_prompt_ollama
+from src.ollama import doctor_prompt_ollama,evaluate_ollama
 from src.gpt import doctor_prompt_gpt,evaluate_gpt
 
 def extract_disease_names(diagnoses):
@@ -229,7 +229,7 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
 def evaluate_department_results(data):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
     print(models)
-    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0} for model in models}
+    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"predicted":[]} for model in models}
 
     # Iterate through each case in the data
     for caseNumber, case in data.items():
@@ -238,9 +238,11 @@ def evaluate_department_results(data):
         # Evaluate predictions for each model
         for model in results.keys():
             predicted = case["predictions"][model]
-            output = list(evaluate_gpt(ground_truth_disease, predicted))
+            # output = list(evaluate_gpt(ground_truth_disease, predicted))
+            output = list(evaluate_ollama(ground_truth_disease, predicted))
             result=str(output[1])
             results[model][result.lower()].append(caseNumber)
             results[model][f'count_{result.lower()}'] += 1
+            results[model]["predicted"].append(str(output[1]).lower())
 
     return results

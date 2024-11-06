@@ -7,3 +7,4 @@ dataset/clinicallab
 dataset/medqa
 medical-reports
 **/__pycache__
+results/** 

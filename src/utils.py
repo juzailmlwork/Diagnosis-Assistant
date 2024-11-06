@@ -3,8 +3,6 @@ import os
 import pandas as pd
 pd.set_option('display.max_colwidth', 5000)
 import json
-from src.gpt import doctor_prompt_gpt_open_ended,doctor_prompt_gpt_semi_ended
-from src.ollama import doctor_prompt_ollama,doctor_prompt_ollama_openended,doctor_prompt_ollama_semi_ended
 
 def filterDepartment(df,department):
     allDepartments=df["clinical_department"].unique().tolist()

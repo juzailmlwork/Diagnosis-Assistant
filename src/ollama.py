@@ -1,79 +1,49 @@
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_ollama.llms import OllamaLLM
 import json
-def doctor_prompt_ollama(medical_history, modelname, diseases, department):
-    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=12000)#4096)
-    print("started model ",modelname)
+def doctor_prompt_ollama(prompt,medical_history, modelname, diseases, department):
+    model = OllamaLLM(model=modelname,temperature=0.1,num_predict=1500,num_ctx=4096)#1500
 
-    system_template = """
-    You are an experienced doctor from {department}, and you will be provided with a medical case of a patient containing their past medical history, physical examination, laboratory examination, and imaging examination results. Your task is to identify the top most likely disease of the patient using differential diagnosis from the given list of diseases:
-
-    The possible set of diseases are {diseases}.
-
-    Solve the medical case by thinking step by step:
-
-    1. **Summarize the medical case.**
-
-    2. **Understand the Diseases**:For each disease in the above list 
-        -   Explain what each of the diseases in the given set is, 
-        -   Common symptoms
-        -   how they are differentiated from one another using tests and symptoms.
-
-    3. **Medical case Analysis**: Understand how each physical examination, laboratory examination, and imaging examination help in detecting the diseases mentioned above.
-
-    5. **Select the Best Possible Disease**: Choose the most likely disease based on the given medical case and understanding of diseases.
-
-    6. **Format the Final Answer** in the below format:
-        - **Final Diagnosis**: Name of the most likely disease from the above set.
-        - **Reasons**: List associated reasons for the final diagnosis. Each reason should be precise, brief, and based on true facts.
-    
-    """
+    system_template = prompt
     
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
-
-    # Create the human message
-    human_template = "Patient's medical history: {medical_history}"
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-
-    # Create the chat prompt
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
     chain = chat_prompt | model
-
     results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
     print("done for model",modelname)
     return results
 
 
-def doctor_prompt_ollama_combined(medical_history, model, diagnosis1, diagnosis2,department):
-    model = OllamaLLM(model=model)
+# def doctor_prompt_ollama_combined(medical_history, model, diagnosis1, diagnosis2,department):
+#     model = OllamaLLM(model=model)
 
 
-    # Create the system message
-    system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient
-    and 2 clinical diagnosis from 2 different doctors. Your task is to identify the best disease based on the input from 2 different doctors 
-    Investrigate both the diagnosis based on your expert knowledge and come to the best possible conclusion.Also note that sometimes those doctors make 
-    mistakes too.I want you to thoroughly investrigate the case and use their views too
-    output should be dictionary with  following fields
-    1.disease-name:name of the disease based on above set
-    2.reason:reason based on past history,physical examination,lab reports and image reports
+#     # Create the system message
+#     system_template = """You are a experienced doctor from {department} and you will be provided with a medical history of a patient
+#     and 2 clinical diagnosis from 2 different doctors. Your task is to identify the best disease based on the input from 2 different doctors 
+#     Investrigate both the diagnosis based on your expert knowledge and come to the best possible conclusion.Also note that sometimes those doctors make 
+#     mistakes too.I want you to thoroughly investrigate the case and use their views too
+#     output should be dictionary with  following fields
+#     1.disease-name:name of the disease based on above set
+#     2.reason:reason based on past history,physical examination,lab reports and image reports
     
-    """
-    system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+#     """
+#     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
-    # Create the human message
-    human_template = """
-    medical case: {medical_history}
-    diagnosis1: {diagnosis1}
-    diagnosis2: {diagnosis2}
-    """
-    human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+#     # Create the human message
+#     human_template = """
+#     medical case: {medical_history}
+#     diagnosis1: {diagnosis1}
+#     diagnosis2: {diagnosis2}
+#     """
+#     human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
 
-    # Create the chat prompt
-    chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-    chain = chat_prompt | model
+#     # Create the chat prompt
+#     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+#     chain = chat_prompt | model
 
-    results=chain.invoke({"department": department,"diagnosis1": diagnosis1,"diagnosis2": diagnosis2,"medical_history":json.dumps(medical_history)})
-    return results
+#     results=chain.invoke({"department": department,"diagnosis1": diagnosis1,"diagnosis2": diagnosis2,"medical_history":json.dumps(medical_history)})
+#     return results
 
 # from langchain.prompts import ChatPromptTemplate
 # from langchain_ollama.llms import OllamaLLM
@@ -87,6 +57,8 @@ def doctor_prompt_ollama_combined(medical_history, model, diagnosis1, diagnosis2
 # class FinalDiagnosis(BaseModel):
 #     final_diagnosis: str = Field(description="Name of the most possible disease within the given set of diseases")
 #     reasons: List[DiagnosisReason] = Field(description="A list of reasoning categories and the associated reasons for the final diagnosis")
+
+
 # def doctor_prompt_disease_restricted_ollama(medical_history, modelname, diseases, department):
 #     model = OllamaLLM(model=modelname, temperature=0.1, num_predict=1200, num_ctx=12000)
 #     print("started model ", modelname)

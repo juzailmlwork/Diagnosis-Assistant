@@ -226,7 +226,7 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
             json.dump(results, outfile)
             
             
-def evaluate_results(data):
+def evaluate_department_results(data):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
     print(models)
     results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0} for model in models}

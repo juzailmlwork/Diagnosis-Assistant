@@ -1,6 +1,6 @@
 import json
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
 
 def doctor_prompt_gpt(prompt,medical_history, model, diseases, department):
     chat = ChatOpenAI(model_name=model, temperature=0.1,max_tokens=1500)
@@ -19,7 +19,7 @@ def doctor_prompt_gpt(prompt,medical_history, model, diseases, department):
     return response.content
 
 def evaluate_gpt(ground_truth_disease, prediction):
-    chat = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1, max_tokens=20)
+    chat = ChatOpenAI(model_name="gpt-4o", temperature=0.1, max_tokens=20)
     system_template = """
     You are an assistant that compares the ground truth and predicted disease. You will be provided 
     with a prediction from an AI model. Your task is to extract the best possible disease from the prediction text 

@@ -208,7 +208,7 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
             print("case_id",case_id)
             # print("principal diagnosis",principal_diagnosis)
             for model in models:
-                if model=="gpt-4":
+                if model=="gpt-4o":
                     output=doctor_prompt_gpt(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
                 else:
                     output=doctor_prompt_ollama(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)

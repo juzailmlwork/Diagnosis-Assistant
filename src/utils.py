@@ -6,6 +6,14 @@ import json
 from src.ollama import doctor_prompt_ollama
 from src.gpt import doctor_prompt_gpt,evaluate_gpt
 
+def extract_disease_names(diagnoses):
+    disease_names = []
+    for diagnosis in diagnoses:
+        disease_name = diagnosis.split(':')[0]  # Split and get the disease name
+        if len(disease_name) < 40:  # Check if the name is less than 40 characters
+            disease_names.append(disease_name)
+    return disease_names
+
 def filterDepartment(df,department):
     allDepartments=df["clinical_department"].unique().tolist()
     if department in allDepartments:
@@ -102,8 +110,8 @@ def select_case_components(departmentdf,rowNumber,required_fields,laboratory="re
     clinical_case = row.clinical_case_summary
     principal_diagnosis = row.principal_diagnosis
     differential_diagnosis = row.differential_diagnosis
-    differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis if len(entry.split(":")[0]) < 40]
-    differential_diagnosis.append(principal_diagnosis)
+    # differential_diagnosis = [entry.split(":")[0] for entry in differential_diagnosis if len(entry.split(":")[0]) < 40]
+    # differential_diagnosis.append(principal_diagnosis)
     differential_diagnosis = [item.capitalize() for item in differential_diagnosis]
     differential_diagnosis.sort()
     try:

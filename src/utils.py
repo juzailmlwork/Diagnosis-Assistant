@@ -245,5 +245,6 @@ def evaluate_department_results(data):
             results[model][f'count_{result.lower()}'] += 1
             results[model]["predicted"].append(str(output[0]).lower())
             results[model]["ground_truth"].append(ground_truth_disease.lower())
+            print(results)
 
     return results

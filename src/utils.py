@@ -138,6 +138,40 @@ def select_case_components(departmentdf,rowNumber,required_fields,laboratory="re
     return case_id,principal_diagnosis,differential_diagnosis,clinical_case_dict,filtered_clinical_case_dict
 
 
+def select_case_components_based_on_id(df,case_id,required_fields,laboratory="result",image="findings"):
+    
+    row = df[df['id'] == case_id].iloc[0]
+    clinical_case = row.clinical_case_summary
+    principal_diagnosis = row.principal_diagnosis
+    department=row.clinical_department
+    differential_diagnosis = row.differential_diagnosis
+    differential_diagnosis = [item.capitalize() for item in differential_diagnosis]
+    differential_diagnosis.sort()
+    try:
+        laboratory_examination = extract_lab_data(row.laboratory_examination,laboratory)
+    except:
+        laboratory_examination = "Not available."
+    try:
+        imageological_examination = extract_lab_data(row.imageological_examination,image)
+    except:
+        imageological_examination="Not available."
+    clinical_case_dict={
+    "Patient basic information":clinical_case['Patient Basic Information'],
+    "Chief complaint" : clinical_case['Chief Complaint'],
+    "Medical history" : clinical_case['Medical History'],
+    "Physical examination" : clinical_case['Physical Examination'],
+    "Laboratory examination" : laboratory_examination,
+    "Imageological examination" : imageological_examination,
+    "Auxillary examination": clinical_case['Auxiliary Examination'],
+    "Pathological examination" : row.pathological_examination
+    }
+    
+    filtered_clinical_case_dict={}
+    for key in required_fields:
+        filtered_clinical_case_dict[key]=clinical_case_dict[key]
+    
+    return principal_diagnosis,differential_diagnosis,filtered_clinical_case_dict
+
     
 def load_preprocess_data(filePath):
         with open(filePath, 'r', encoding='utf-8') as f:
@@ -222,9 +256,13 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
                     output=doctor_prompt_ollama(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
                 case_details["predictions"][model]=output
             results[str(case_id)]=case_details
-        with open(f"results/{department}_{type}_{report_type}.json", "w") as outfile: 
+        with open(f"results/{type}/{department}_{type}.json", "w") as outfile: 
             json.dump(results, outfile)
-            
+import difflib
+
+def calculate_word_similarity(word1, word2):
+    # Use SequenceMatcher to calculate similarity
+    return difflib.SequenceMatcher(None, word1, word2).ratio() * 100            
             
 def evaluate_department_results(data):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
@@ -233,18 +271,33 @@ def evaluate_department_results(data):
 
     # Iterate through each case in the data
     for caseNumber, case in data.items():
-        ground_truth_disease = case["original"]["main-diagnosis"]
-        
+        ground_truth_disease = case["original"]["main-diagnosis"]        
+        # # Evaluate predictions for each model
+        # for model in results.keys():
+        #     predicted = case["predictions"][model]
+        #     # output = list(evaluate_gpt(ground_truth_disease, predicted))
+        #     # output = list(evaluate_ollama(ground_truth_disease, predicted))
+        #     output = list(evaluate_ollama(ground_truth_disease, predicted,diseases))
+        #     result=str(output[1])
+        #     results[model][result.lower()].append(caseNumber)
+        #     results[model][f'count_{result.lower()}'] += 1
+        #     results[model]["predicted"].append(str(output[0]).lower())
+        #     results[model]["ground_truth"].append(ground_truth_disease.lower())
         # Evaluate predictions for each model
         for model in results.keys():
             predicted = case["predictions"][model]
-            # output = list(evaluate_gpt(ground_truth_disease, predicted))
-            output = list(evaluate_ollama(ground_truth_disease, predicted))
-            result=str(output[1])
-            results[model][result.lower()].append(caseNumber)
-            results[model][f'count_{result.lower()}'] += 1
-            results[model]["predicted"].append(str(output[0]).lower())
+            output = list(evaluate_ollama(ground_truth_disease, predicted))[0]
+            result=output.lower()
+            # results[model][result.lower()].append(caseNumber)
+            similarity_percentage = calculate_word_similarity(ground_truth_disease, result)
+            if similarity_percentage >80:
+                matching="true"
+            else:
+                matching="false"
+            print(ground_truth_disease,result,matching,similarity_percentage)
+            results[model][matching].append(caseNumber) 
+            results[model][f'count_{matching}'] += 1
+            results[model]["predicted"].append(output)
             results[model]["ground_truth"].append(ground_truth_disease.lower())
-            print(results)
 
     return results

@@ -267,11 +267,12 @@ def calculate_word_similarity(word1, word2):
 def evaluate_department_results(data):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
     print(models)
-    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"predicted":[],"ground_truth":[]} for model in models}
+    results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"results":[]} for model in models}
 
     # Iterate through each case in the data
     for caseNumber, case in data.items():
-        ground_truth_disease = case["original"]["main-diagnosis"]        
+        ground_truth_disease = case["original"]["main-diagnosis"]  
+        differential_diagnosis = case["original"]["differential_diagnosis"]       
         # # Evaluate predictions for each model
         # for model in results.keys():
         #     predicted = case["predictions"][model]
@@ -294,10 +295,10 @@ def evaluate_department_results(data):
                 matching="true"
             else:
                 matching="false"
-            print(ground_truth_disease,result,matching,similarity_percentage)
+            # print(ground_truth_disease,result,matching,similarity_percentage)
             results[model][matching].append(caseNumber) 
             results[model][f'count_{matching}'] += 1
-            results[model]["predicted"].append(output)
-            results[model]["ground_truth"].append(ground_truth_disease.lower())
+            results[model]["results"].append({"case_id":caseNumber,"ground_truth":ground_truth_disease.lower(),"predicted":result,"differential-diagnosis":differential_diagnosis})
+            # results[model]["ground_truth"].append(ground_truth_disease.lower())
 
     return results

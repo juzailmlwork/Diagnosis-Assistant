@@ -1,4 +1,4 @@
 pandas
-langchain
+langchain-ollama
 langchain-community
 python-dotenv

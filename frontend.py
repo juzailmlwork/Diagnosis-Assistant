@@ -19,11 +19,26 @@ departments = [
     "hepatobiliary and pancreas surgical department", "hematology department"
 ]
 
+# Helper function to save clinical case as JSON
+def save_clinical_case(clinical_case_dict):
+    if not clinical_case_dict:
+        st.error("No clinical case information available to save.")
+        return
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_name = f"clinical_case_{timestamp}.json"
+    with open(file_name, "w") as file:
+        json.dump(clinical_case_dict, file, indent=4)
+
+    st.success(f"Clinical case saved as {file_name}.")
+
 # Helper function to get user input for various fields
-def get_input(field_name, placeholder):
-    """Helper function to get input and return 'Not available' if left blank."""
+def get_input(field_name, placeholder, required=False):
+    """Helper function to get input and return None if left blank for required fields."""
     value = st.text_area(field_name, "", placeholder=placeholder).strip()
-    return value if value else "Not available"
+    if required and not value:
+        st.error(f"{field_name} is required.")
+    return value if value else None if required else "Not available"
 
 # Function to collect case information
 def collect_clinical_case_info():
@@ -51,16 +66,16 @@ def collect_clinical_case_info():
         "Select Department", departments, index=0
     )
 
-    # Patient Basic Information
+    # Patient Basic Information (Required)
     st.header("Patient Basic Information")
     clinical_case_dict["Patient basic information"] = get_input(
-        "Enter Patient Basic Information", "E.g., Elderly female, 88 years old."
+        "Enter Patient Basic Information", "E.g., Elderly female, 88 years old.", required=True
     )
 
-    # Chief Complaint
+    # Chief Complaint (Required)
     st.header("Chief Complaint")
     clinical_case_dict["Chief complaint"] = get_input(
-        "Enter Chief Complaint", "E.g., Fatigue for 1 week, fever, chills, and dysuria for 3 days."
+        "Enter Chief Complaint", "E.g., Fatigue for 1 week, fever, chills, and dysuria for 3 days.", required=True
     )
 
     # Medical History
@@ -97,15 +112,12 @@ def collect_clinical_case_info():
     else:
         clinical_case_dict["Differential diagnosis"] = []
 
-    return clinical_case_dict
+    # Check for required fields
+    if not clinical_case_dict["Patient basic information"] or not clinical_case_dict["Chief complaint"]:
+        st.error("Please fill in all required fields.")
+        return None
 
-# Save clinical case dictionary as JSON file with timestamp
-def save_clinical_case(clinical_case_dict):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"clinical_case_{timestamp}.json"
-    with open(filename, "w") as f:
-        json.dump(clinical_case_dict, f, indent=4)
-    st.success(f"Clinical case saved as '{filename}'.")
+    return clinical_case_dict
 
 # Main function
 def main():
@@ -114,33 +126,40 @@ def main():
 
     clinical_case_dict = collect_clinical_case_info()
 
-    # Separate Buttons for Actions
-    if st.button("Show Clinical Case Dictionary"):
-        st.subheader("Collected Clinical Case Information")
-        st.json(clinical_case_dict)
+    if clinical_case_dict:  # Only proceed if required fields are filled
+        # Separate Buttons for Actions
+        if st.button("Show Clinical Case Dictionary"):
+            st.subheader("Collected Clinical Case Information")
+            st.json(clinical_case_dict)
 
-    if st.button("Save Clinical Case as JSON"):
-        if clinical_case_dict:
+        if st.button("Save Clinical Case as JSON"):
             save_clinical_case(clinical_case_dict)
 
-    if st.button("Run Prediction"):
-        if clinical_case_dict["Models"]:
-            prompt = single_shot_disease_only_prompt
-            differential_diagnosis = clinical_case_dict["Differential diagnosis"]
-            department = clinical_case_dict["Department"]
-            models = clinical_case_dict["Models"]
-            filtered_clinical_case_dict = {k: v for k, v in clinical_case_dict.items() if k not in ["Differential diagnosis", "Department", "Models", 'Prompt type']}
-            # Replace the file loading part with actual case data for testing
-            filtered_clinical_case_dict = json.load(open("clinical_case_example.json"))
-            differential_diagnosis = ['Acute pyelonephritis', 'Urinary system stones', 'Urinary tract tumor', 'Urinary tuberculosis']
-            department = "nephrology department"
-            for model in models:
-                if model == "gpt-4o":
-                    output = doctor_prompt_gpt(prompt, filtered_clinical_case_dict, model, differential_diagnosis, department)
-                else:
-                    output = doctor_prompt_ollama(prompt, filtered_clinical_case_dict, model, differential_diagnosis, department)
-                st.subheader(f"Output from {model}")
-                st.write(output)
+        if st.button("Run Prediction"):
+            if clinical_case_dict["Models"]:
+                prompt = single_shot_disease_only_prompt
+                differential_diagnosis = clinical_case_dict["Differential diagnosis"]
+                department = clinical_case_dict["Department"]
+                models = clinical_case_dict["Models"]
+                filtered_clinical_case_dict = {k: v for k, v in clinical_case_dict.items() if k not in ["Differential diagnosis", "Department", "Models", 'Prompt type']}
+                # Replace the file loading part with actual case data for testing
+                filtered_clinical_case_dict = json.load(open("clinical_case_example.json"))
+                differential_diagnosis = ['Acute pyelonephritis', 'Urinary system stones', 'Urinary tract tumor', 'Urinary tuberculosis']
+                department = "nephrology department"
+                predictions={}
+                for model in models:
+                    if model == "gpt-4o":
+                        output = doctor_prompt_gpt(prompt, filtered_clinical_case_dict, model, differential_diagnosis, department)
+                    else:
+                        output = doctor_prompt_ollama(prompt, filtered_clinical_case_dict, model, differential_diagnosis, department)
+                    predictions[model]=output
+                    with open(f"frontend-results/predictions.json", "w") as outfile: 
+                        json.dump(predictions, outfile)
+                    st.subheader(f"Output from {model}")
+                    st.write(output)
 
 if __name__ == "__main__":
     main()
+
+
+

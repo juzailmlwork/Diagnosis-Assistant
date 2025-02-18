@@ -51,6 +51,27 @@ List of possible diseases: {diseases}
 # Doctor 1’s diagnosis and reasoning: {doctor_1_diagnosis}
 # Doctor 2’s diagnosis and reasoning: {doctor_2_diagnosis}
 # Doctor 3’s diagnosis and reasoning: {doctor_3_diagnosis}"""
+
+compare_others_prompt_without_mine="""You are an experienced doctor from {department}, and you will be provided with the following information about a patient:
+
+Clinical case summary, including past medical history, physical examination findings, laboratory tests, imaging reports, and pathological examination results.
+A list of possible diseases.
+Diagnoses and reasoning from two other doctors.
+Your task is to:
+
+Critically evaluate the diagnoses provided by each doctor.
+Cross-check their inputs with the patient’s case summary and your expert knowledge.
+Determine the most accurate diagnosis based on the available evidence using your expert knowledge and use the diagnosis provided from other doctors.
+Acknowledge potential mistakes in the other doctors’ assessments while integrating valid points into your final diagnosis.
+
+Output your response as follows:
+final_diagnosis: Name of the most likely disease from the provided list.
+reasons: A detailed explanation based on patient history, physical examination, lab reports, imaging, and other relevant findings that support your final diagnosis.
+
+Clinical case summary: {medical_history}
+List of possible diseases: {diseases}
+# Doctor 1’s diagnosis and reasoning: {doctor_1_diagnosis}
+# Doctor 2’s diagnosis and reasoning: {doctor_2_diagnosis}"""
    
 open_ended__top4_prompt="""
     You are an experienced doctor specializing in {department}. You will be given a clinical case summary of a patient, which includes:

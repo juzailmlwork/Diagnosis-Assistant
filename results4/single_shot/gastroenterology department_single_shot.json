@@ -1,0 +1,408 @@
+{
+    "552": {
+        "original": {
+            "main-diagnosis": "acute pancreatitis",
+            "differential_diagnosis": [
+                "Acute intestinal obstruction",
+                "Acute pancreatitis",
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Acute pancreatitis",
+            "llama3.1": "Acute pancreatitis",
+            "gemma2": "Acute pancreatitis \n",
+            "mistral-nemo": "Acute pancreatitis",
+            "phi3:14b": "Acute pancreatitis"
+        }
+    },
+    "555": {
+        "original": {
+            "main-diagnosis": "acute pancreatitis",
+            "differential_diagnosis": [
+                "Acute intestinal obstruction",
+                "Acute pancreatitis",
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Acute pancreatitis",
+            "llama3.1": "Acute pancreatitis",
+            "gemma2": "Acute pancreatitis \n",
+            "mistral-nemo": "Acute pancreatitis",
+            "phi3:14b": "Acute pancreatitis"
+        }
+    },
+    "558": {
+        "original": {
+            "main-diagnosis": "acute pancreatitis",
+            "differential_diagnosis": [
+                "Acute intestinal obstruction",
+                "Acute pancreatitis",
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Acute pancreatitis",
+            "llama3.1": "Acute pancreatitis",
+            "gemma2": "Acute pancreatitis \n",
+            "mistral-nemo": "Acute intestinal obstruction",
+            "phi3:14b": "Acute pancreatitis"
+        }
+    },
+    "561": {
+        "original": {
+            "main-diagnosis": "peptic ulcer",
+            "differential_diagnosis": [
+                "Pancreatitis",
+                "Peptic ulcer",
+                "Upper gastrointestinal perforation"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Peptic ulcer",
+            "llama3.1": "Peptic ulcer.",
+            "gemma2": "Peptic ulcer \n",
+            "mistral-nemo": "Peptic ulcer",
+            "phi3:14b": "Peptic ulcer"
+        }
+    },
+    "564": {
+        "original": {
+            "main-diagnosis": "peptic ulcer",
+            "differential_diagnosis": [
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Peptic ulcer",
+            "llama3.1": "Peptic ulcer.",
+            "gemma2": "Peptic ulcer \n",
+            "mistral-nemo": "Acute perforation of peptic ulcer",
+            "phi3:14b": "Peptic ulcer"
+        }
+    },
+    "567": {
+        "original": {
+            "main-diagnosis": "peptic ulcer",
+            "differential_diagnosis": [
+                "Chronic gastritis",
+                "Gastric cancer",
+                "Gastrinoma",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric cancer",
+            "llama3.1": "Gastric cancer",
+            "gemma2": "Gastric cancer \n",
+            "mistral-nemo": "Chronic gastritis",
+            "phi3:14b": "Peptic ulcer"
+        }
+    },
+    "570": {
+        "original": {
+            "main-diagnosis": "peptic ulcer",
+            "differential_diagnosis": [
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Peptic ulcer",
+            "llama3.1": "Acute perforation of peptic ulcer",
+            "gemma2": "Cholelithiasis and acute cholecystitis \n",
+            "mistral-nemo": "Acute perforation of peptic ulcer",
+            "phi3:14b": "Acute perforation of peptic ulcer"
+        }
+    },
+    "573": {
+        "original": {
+            "main-diagnosis": "hepatic failure",
+            "differential_diagnosis": [
+                "Hepatic failure",
+                "Liver abscess",
+                "Primary liver cancer",
+                "Secondary liver cancer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Hepatic failure",
+            "llama3.1": "Secondary liver cancer",
+            "gemma2": "Primary liver cancer \n",
+            "mistral-nemo": "Hepatic failure",
+            "phi3:14b": "Hepatic failure"
+        }
+    },
+    "576": {
+        "original": {
+            "main-diagnosis": "hepatic failure",
+            "differential_diagnosis": [
+                "Drug-induced hepatitis",
+                "Hepatic failure",
+                "Viral hepatitis"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Drug-induced hepatitis",
+            "llama3.1": "Viral hepatitis",
+            "gemma2": "Viral hepatitis \n",
+            "mistral-nemo": "Drug-induced hepatitis",
+            "phi3:14b": "Drug-induced hepatitis"
+        }
+    },
+    "579": {
+        "original": {
+            "main-diagnosis": "hepatic failure",
+            "differential_diagnosis": [
+                "Drug-induced hepatitis",
+                "Hepatic failure",
+                "Viral hepatitis"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Drug-induced hepatitis",
+            "llama3.1": "Drug-induced hepatitis",
+            "gemma2": "Viral hepatitis \n",
+            "mistral-nemo": "Drug-induced hepatitis",
+            "phi3:14b": "Drug-induced hepatitis"
+        }
+    },
+    "582": {
+        "original": {
+            "main-diagnosis": "gastric polyp",
+            "differential_diagnosis": [
+                "Acute perforation of peptic ulcer",
+                "Cholelithiasis and acute cholecystitis",
+                "Gastric polyp"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric polyp",
+            "llama3.1": "Gastric polyp",
+            "gemma2": "Gastric polyp \n",
+            "mistral-nemo": "Acute perforation of peptic ulcer",
+            "phi3:14b": "Gastric polyp"
+        }
+    },
+    "585": {
+        "original": {
+            "main-diagnosis": "gastric polyp",
+            "differential_diagnosis": [
+                "Cholelithiasis and acute cholecystitis",
+                "Gastric polyp",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric polyp",
+            "llama3.1": "Peptic ulcer.",
+            "gemma2": "Peptic ulcer \n",
+            "mistral-nemo": "Cholelithiasis and acute cholecystitis",
+            "phi3:14b": "Gastric polyp"
+        }
+    },
+    "588": {
+        "original": {
+            "main-diagnosis": "gastric polyp",
+            "differential_diagnosis": [
+                "Chronic gastritis",
+                "Gastric cancer",
+                "Gastric polyp",
+                "Gastrinoma"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Chronic gastritis",
+            "llama3.1": "Chronic gastritis",
+            "gemma2": "Gastric polyp \n",
+            "mistral-nemo": "Chronic gastritis",
+            "phi3:14b": "Gastric polyp"
+        }
+    },
+    "591": {
+        "original": {
+            "main-diagnosis": "benign gastric tumor",
+            "differential_diagnosis": [
+                "Acute necrotizing enteritis",
+                "Amoebic colitis",
+                "Benign gastric tumor",
+                "Colorectal cancer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Benign gastric tumor",
+            "llama3.1": "Colorectal cancer",
+            "gemma2": "Benign gastric tumor \n",
+            "mistral-nemo": "Acute necrotizing enteritis",
+            "phi3:14b": "Acute necrotizing enteritis"
+        }
+    },
+    "594": {
+        "original": {
+            "main-diagnosis": "benign gastric tumor",
+            "differential_diagnosis": [
+                "Benign gastric tumor",
+                "Gastric leiomyoma",
+                "Gastric polyp",
+                "Primary malignant lymphoma"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric polyp",
+            "llama3.1": "Gastric polyp",
+            "gemma2": "Gastric polyp \n",
+            "mistral-nemo": "Gastric polyp",
+            "phi3:14b": "Gastric polyp"
+        }
+    },
+    "597": {
+        "original": {
+            "main-diagnosis": "benign gastric tumor",
+            "differential_diagnosis": [
+                "Benign gastric tumor",
+                "Central nervous system diseases",
+                "Gastrointestinal diseases",
+                "Hepatobiliary and pancreatic diseases"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Benign gastric tumor",
+            "llama3.1": "Gastrointestinal diseases",
+            "gemma2": "Benign gastric tumor \n",
+            "mistral-nemo": "Gastrointestinal diseases",
+            "phi3:14b": "    Gastrointestinal diseases"
+        }
+    },
+    "600": {
+        "original": {
+            "main-diagnosis": "benign gastric tumor",
+            "differential_diagnosis": [
+                "Benign gastric tumor",
+                "Gastrinoma",
+                "Stomach cancer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastrinoma",
+            "llama3.1": "Stomach cancer",
+            "gemma2": "Gastrinoma \n",
+            "mistral-nemo": "Gastrinoma",
+            "phi3:14b": "Gastrinoma"
+        }
+    },
+    "603": {
+        "original": {
+            "main-diagnosis": "gastroesophageal reflux disease",
+            "differential_diagnosis": [
+                "Angina pectoris",
+                "Esophageal cancer",
+                "Gastroesophageal reflux disease",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Esophageal cancer",
+            "llama3.1": "Gastroesophageal reflux disease.",
+            "gemma2": "Gastroesophageal reflux disease \n",
+            "mistral-nemo": "Gastroesophageal reflux disease",
+            "phi3:14b": "Gastroesophageal reflux disease"
+        }
+    },
+    "606": {
+        "original": {
+            "main-diagnosis": "gastroesophageal reflux disease",
+            "differential_diagnosis": [
+                "Angina pectoris",
+                "Esophageal cancer",
+                "Gastroesophageal reflux disease",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Esophageal cancer",
+            "llama3.1": "Gastroesophageal reflux disease.",
+            "gemma2": "Gastroesophageal reflux disease \n",
+            "mistral-nemo": "Gastroesophageal reflux disease",
+            "phi3:14b": "Gastroesophageal reflux disease"
+        }
+    },
+    "609": {
+        "original": {
+            "main-diagnosis": "gastroesophageal reflux disease",
+            "differential_diagnosis": [
+                "Chronic gastritis",
+                "Gastric cancer",
+                "Gastrinoma",
+                "Gastroesophageal reflux disease"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric cancer",
+            "llama3.1": "Gastric cancer",
+            "gemma2": "Gastroesophageal reflux disease \n",
+            "mistral-nemo": "Gastroesophageal reflux disease",
+            "phi3:14b": "Gastroesophageal reflux disease"
+        }
+    },
+    "612": {
+        "original": {
+            "main-diagnosis": "benign esophageal tumor",
+            "differential_diagnosis": [
+                "Benign esophageal tumor",
+                "Functional dyspepsia",
+                "Gastrinoma",
+                "Globus hystericus"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Functional dyspepsia",
+            "llama3.1": "Functional dyspepsia",
+            "gemma2": "Functional dyspepsia \n",
+            "mistral-nemo": "Globus hystericus",
+            "phi3:14b": "Gastrinoma"
+        }
+    },
+    "615": {
+        "original": {
+            "main-diagnosis": "benign esophageal tumor",
+            "differential_diagnosis": [
+                "Benign esophageal tumor",
+                "Chronic gastritis",
+                "Gastric cancer",
+                "Gastrinoma"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Gastric cancer",
+            "llama3.1": "Gastric cancer",
+            "gemma2": "Benign esophageal tumor \n",
+            "mistral-nemo": "Gastrinoma",
+            "phi3:14b": "Gastrinoma"
+        }
+    },
+    "618": {
+        "original": {
+            "main-diagnosis": "benign esophageal tumor",
+            "differential_diagnosis": [
+                "Angina pectoris",
+                "Benign esophageal tumor",
+                "Esophageal cancer",
+                "Peptic ulcer"
+            ]
+        },
+        "predictions": {
+            "gpt-4o": "Esophageal cancer",
+            "llama3.1": "Esophageal cancer",
+            "gemma2": "Esophageal cancer \n",
+            "mistral-nemo": "Esophageal cancer",
+            "phi3:14b": "Esophageal cancer"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+department,len_all_detected,len_none_detected,len_atleast_one_detected
+nephrology department,13,1,3
+gynecology department,13,3,5
+endocrinology department,23,1,2
+neurology department,14,6,6
+pediatrics department,14,0,5
+cardiac surgical department,13,0,0
+gastrointestinal surgical department,12,1,4
+respiratory medicine department,15,2,5
+gastroenterology department,11,8,4
+urinary surgical department,19,2,3
+hepatobiliary and pancreas surgical department,22,0,5
+hematology department,0,5,3
+Total,169,29,45

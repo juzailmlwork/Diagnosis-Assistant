@@ -1,0 +1,14 @@
+department,single_shot,with_reasons,check_others_input
+neurology department,18,19,16
+gynecology department,10,11,13
+respiratory medicine department,12,18,17
+pediatrics department,13,16,15
+hepatobiliary and pancreas surgical department,21,25,25
+gastrointestinal surgical department,8,11,12
+hematology department,2,3,1
+urinary surgical department,19,22,19
+cardiac surgical department,11,13,13
+endocrinology department,21,24,24
+gastroenterology department,8,11,13
+nephrology department,9,15,14
+Total,152,188,182

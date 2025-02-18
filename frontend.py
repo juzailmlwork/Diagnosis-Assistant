@@ -26,7 +26,7 @@ def save_clinical_case(clinical_case_dict):
         return
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_name = f"clinical_case_{timestamp}.json"
+    file_name = f"frontend-results/clinical_case_{timestamp}.json"
     with open(file_name, "w") as file:
         json.dump(clinical_case_dict, file, indent=4)
 
@@ -143,7 +143,7 @@ def main():
                 models = clinical_case_dict["Models"]
                 filtered_clinical_case_dict = {k: v for k, v in clinical_case_dict.items() if k not in ["Differential diagnosis", "Department", "Models", 'Prompt type']}
                 # Replace the file loading part with actual case data for testing
-                filtered_clinical_case_dict = json.load(open("clinical_case_example.json"))
+                filtered_clinical_case_dict = json.load(open("frontend-results/clinical_case_example.json"))
                 differential_diagnosis = ['Acute pyelonephritis', 'Urinary system stones', 'Urinary tract tumor', 'Urinary tuberculosis']
                 department = "nephrology department"
                 predictions={}

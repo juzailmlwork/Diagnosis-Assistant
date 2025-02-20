@@ -8,3 +8,4 @@ dataset/medqa
 medical-reports
 **/__pycache__
 results/** 
+diagnosis-assistant/**

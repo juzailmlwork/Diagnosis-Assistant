@@ -9,3 +9,4 @@ medical-reports
 **/__pycache__
 results/** 
 diagnosis-assistant/**
+results-**

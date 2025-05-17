@@ -6,7 +6,19 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import json
 import os
+from pydantic import BaseModel, Field
+from typing import Optional
 
+class CaseModel(BaseModel):
+    Department: str
+    Patient_Basic_Information: dict  # or you can create another Pydantic model for this
+    Chief_Complaint: str
+    Medical_History: str
+    Physical_Examination: str
+    Laboratory_Examination: Optional[str] = None
+    Imaging_Examination: Optional[str] = None
+    differential_diagnosis: List =[]
+    
 app = FastAPI()
 
 # Security setup
@@ -17,8 +29,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-USERS_FILE = "users.json"
-CASES_FILE = "clinical_cases.json"
+USERS_FILE = "data/users.json"
+CASES_FILE = "data/clinical_cases.json"
 
 # Initialize data files
 for f in [USERS_FILE, CASES_FILE]:
@@ -85,13 +97,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     token = create_access_token(data={"sub": user["username"]}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     return {"access_token": token, "token_type": "bearer"}
 
+    
 @app.post("/submit_case")
-def submit_case(case: dict, username: str = Depends(get_current_user)):
+def submit_case(case: CaseModel, username: str = Depends(get_current_user)):
     cases = load_cases()
     cases.append({
         "submitted_by": username,
         "timestamp": datetime.utcnow().isoformat(),
-        "case": case
+        "case": case.dict()
     })
     save_cases(cases)
     return {"msg": "Case submitted successfully"}

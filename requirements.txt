@@ -2,7 +2,9 @@ pandas
 langchain-ollama
 langchain-community
 python-dotenv
-streamlit-webrtc
 streamlit
-speechrecognition
-pydub
+fastapi 
+uvicorn 
+python-jose[cryptography] 
+passlib[bcrypt]
+python-multipart

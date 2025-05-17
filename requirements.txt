@@ -2,3 +2,7 @@ pandas
 langchain-ollama
 langchain-community
 python-dotenv
+streamlit-webrtc
+streamlit
+speechrecognition
+pydub

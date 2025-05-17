@@ -302,3 +302,43 @@ def evaluate_department_results(data):
             # results[model]["ground_truth"].append(ground_truth_disease.lower())
 
     return results
+
+
+import zipfile
+import os
+import shutil
+
+def unzip_flatten_top_level(zip_path: str, extract_to: str = "./"):
+    os.makedirs(extract_to, exist_ok=True)
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        for member in zip_ref.infolist():
+            if member.is_dir():
+                continue
+
+            path_parts = member.filename.split(os.sep)
+
+            # Skip the top-level folder
+            if len(path_parts) > 1:
+                new_filename = os.path.join(*path_parts[1:])
+            else:
+                new_filename = path_parts[0]
+
+            target_path = os.path.join(extract_to, new_filename)
+            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+
+            with zip_ref.open(member) as source, open(target_path, 'wb') as target:
+                shutil.copyfileobj(source, target)
+
+    print(f"Unzipped to: {extract_to}")
+
+
+def zip_folder(folder_path: str, output_zip_path: str):
+    with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                abs_path = os.path.join(root, file)
+                rel_path = os.path.relpath(abs_path, start=folder_path)
+                zipf.write(abs_path, arcname=rel_path)
+    
+    print(f"Zipped folder '{folder_path}' into: {output_zip_path}")

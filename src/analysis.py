@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-
+import os
 def run_individual_model_analysis(models,types,folder):
     for model in models:
         temp_dict = {}
@@ -19,7 +19,9 @@ def run_individual_model_analysis(models,types,folder):
         df.index.name = 'department'
         
         # Save to CSV
-        df.to_csv(f"{folder}/analysis/{model}_performance.csv")
+        output_folder= f"{folder}/analysis"
+        os.makedirs(output_folder, exist_ok=True)
+        df.to_csv(f"{output_folder}/{model}_performance.csv")
 
 def get_statistics(type,departments,folder):
     with open(f"{folder}/analysis/{type}.json", "r") as file:
@@ -61,5 +63,7 @@ def get_statistics(type,departments,folder):
     # df.to_csv(f'results/analysis/department_wise_statistics_{type}.csv')
     
     filtered_df = df[['len_all_detected', 'len_none_detected','len_atleast_one_detected']]
-    filtered_df.to_csv(f'{folder}/analysis/department_wise_statistics_{type}.csv')
+    output_folder= f"{folder}/analysis"
+    os.makedirs(output_folder, exist_ok=True)
+    filtered_df.to_csv(f'{output_folder}/department_wise_statistics_{type}.csv')
     return filtered_df

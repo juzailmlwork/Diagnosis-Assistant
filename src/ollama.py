@@ -10,7 +10,6 @@ def doctor_prompt_ollama(prompt,medical_history, modelname, diseases, department
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
     chain = chat_prompt | model
     results=chain.invoke({"department": department,"diseases": diseases,"medical_history":json.dumps(medical_history)})
-    print("done for model",modelname)
     return results
 
 

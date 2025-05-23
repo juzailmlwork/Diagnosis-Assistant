@@ -221,7 +221,7 @@ def extract_all_diseases_per_department(departmentdf,max_len_disease=40):
     return uniqueDiseases
 
 
-def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_examination="result",
+def run_prediction(df,prompt,departments,models,folder,type="semi_ended",laboratory_examination="result",
                    image_examination="findings",skip=6):
     required_fields=[ "Patient basic information",
                  "Chief complaint",
@@ -256,7 +256,9 @@ def run_prediction(df,prompt,departments,models=[],type="semi_ended",laboratory_
                     output=doctor_prompt_ollama(prompt,filtered_clinical_case_dict,model,differential_diagnosis,department)
                 case_details["predictions"][model]=output
             results[str(case_id)]=case_details
-        with open(f"results/{type}/{department}_{type}.json", "w") as outfile: 
+        output_folder= f"{folder}/{type}"
+        os.makedirs(output_folder, exist_ok=True)
+        with open(f"{output_folder}/{department}_{type}.json", "w") as outfile: 
             json.dump(results, outfile)
 import difflib
 

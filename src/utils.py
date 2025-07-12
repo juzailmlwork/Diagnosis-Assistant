@@ -266,7 +266,7 @@ def calculate_word_similarity(word1, word2):
     # Use SequenceMatcher to calculate similarity
     return difflib.SequenceMatcher(None, word1, word2).ratio() * 100            
             
-def evaluate_department_results(data):
+def evaluate_department_results(data,evaluating_model="ollama"):
     models=list(data[list(data.keys())[0]]["predictions"].keys())
     print(models)
     results = {model: {"true": [], "false": [], "count_true": 0, "count_false": 0,"results":[]} for model in models}
@@ -289,8 +289,12 @@ def evaluate_department_results(data):
         # Evaluate predictions for each model
         for model in results.keys():
             predicted = case["predictions"][model]
-            output = list(evaluate_ollama(ground_truth_disease, predicted))[0]
+            if evaluating_model=="ollama":
+                output = list(evaluate_ollama(ground_truth_disease, predicted))[0]
+            elif evaluating_model=="gpt":
+                 output = list(evaluate_gpt(ground_truth_disease, predicted))[0]
             result=output.lower()
+            # print("predicted disease is",result)
             # results[model][result.lower()].append(caseNumber)
             similarity_percentage = calculate_word_similarity(ground_truth_disease, result)
             if similarity_percentage >80:

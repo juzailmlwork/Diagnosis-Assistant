@@ -19,19 +19,27 @@ def doctor_prompt_gpt(prompt,medical_history, model, diseases, department):
     return response.content
 
 def evaluate_gpt(ground_truth_disease, prediction):
-    chat = ChatOpenAI(model_name="gpt-4o", temperature=0.1, max_tokens=20)
+    chat = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.1, max_tokens=30)
+#     system_template = """
+# You are an assistant that compares the ground truth and predicted disease. You will be provided 
+# with a prediction from an AI model. Your task is to extract the best possible disease from the prediction text 
+# and compare it with the ground truth. First, extract the best possible disease given in the prediction text. Do not do anything else.
+# If the predicted result and the ground truth are the same, set the value of final to True; otherwise, set it to False.
+
+# Return a list in the exact format: ["best_possible_disease", final].
+# Do not use variables, extra text, or any additional characters. Only return the list.
+
+# The ground truth is: {ground_truth_disease}
+# The predicted text is: {prediction}
+# """
     system_template = """
-You are an assistant that compares the ground truth and predicted disease. You will be provided 
-with a prediction from an AI model. Your task is to extract the best possible disease from the prediction text 
-and compare it with the ground truth. First, extract the best possible disease given in the prediction text. Do not do anything else.
-If the predicted result and the ground truth are the same, set the value of final to True; otherwise, set it to False.
+    You are an assistant that compares the ground truth and predicted disease. You will be provided 
+    with a prediction from an AI model. Your task is to extract the final diagnosis from the prediction text . Do not do anything else.
 
-Return a list in the exact format: ["best_possible_disease", final].
-Do not use variables, extra text, or any additional characters. Only return the list.
-
-The ground truth is: {ground_truth_disease}
-The predicted text is: {prediction}
-"""
+    Return a list in the exact format: ["final diagnosis",].
+    Do not use variables, extra text, or any additional characters. Only return the list.make sure final is a boolean
+    The predicted text is: {prediction}
+    """
 
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt])
@@ -43,6 +51,5 @@ The predicted text is: {prediction}
     ).to_messages()
     
     response = chat(messages)
-    print(response.content,flush=True)
     return eval(response.content)
 

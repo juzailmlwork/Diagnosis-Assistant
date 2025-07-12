@@ -31,23 +31,6 @@ llm_gemini = LLM(
 )
 
 
-clinical_case_input = {
-    "Patient Basic Information": "45-year-old male.",
-    "Chief Complaint": "Chronic dry cough, night sweats, and weight loss over 4 weeks.",
-    "Medical History": "Previously healthy. Worked in healthcare in India 6 months ago. No known TB contact. Non-smoker.",
-    "Physical Examination": "T: 37.5°C, P: 78 bpm, R: 16, BP: 130/80 mmHg. Thin build, no acute distress. Lungs: Bibasilar crackles. No clubbing.",
-    "Auxiliary Examination": "PPD Skin Test: Indeterminate. QuantiFERON-TB Gold: Negative.",
-    "Imaging Examination": "Chest X-ray: Fibrocavitary lesions in upper lobes.",
-    "Laboratory Examination": "WBC: 7.2×10⁹/L, CRP: 15 mg/L, ESR: 50 mm/hr.",
-    "Pathological Examination": "None."
-}
-
-initial_differentials = [
-    "Pulmonary Tuberculosis (Latent/Reactivation)",
-    "Fungal Pneumonia (e.g., Histoplasmosis)",
-    "Chronic Bronchitis with Superimposed Infection",
-    "Lung Cancer with Recurrent Infections"
-]
 
 def create_diagnostic_agent(name, llm):
     return Agent(
@@ -62,9 +45,7 @@ def create_diagnostic_agent(name, llm):
         verbose=True,
     )
 
-doctor_1 = create_diagnostic_agent("Dr. Alpha", llm_gpt4o_mini)
-doctor_2 = create_diagnostic_agent("Dr. Beta", llm_gpt4o_mini_2)
-# doctor_3 = create_diagnostic_agent("Dr. Gama", llm_gemini)
+
 
 
 def generate_diagnostic_prompt(case_data, differentials):
@@ -83,9 +64,9 @@ Candidate Differentials:
 {differentials}
 """
 
-def create_diagnostic_task(agent):
+def create_diagnostic_task(agent,clinical_case_input,initial_potential_diseases):
     return Task(
-        description=generate_diagnostic_prompt(clinical_case_input, initial_differentials),
+        description=generate_diagnostic_prompt(clinical_case_input,initial_potential_diseases),
         expected_output="""
 - Top Diagnosis: [Your chosen disease]
 - Rationale: [Summarize your evidence-based reasoning]
@@ -93,9 +74,6 @@ def create_diagnostic_task(agent):
         agent=agent
     )
 
-task_1 = create_diagnostic_task(doctor_1)
-task_2 = create_diagnostic_task(doctor_2)
-# task_3 = create_diagnostic_task(doctor_3)
 
 manager = Agent(
     role="Diagnostic Consensus Coordinator",
@@ -173,9 +151,31 @@ FINAL DIAGNOSIS:
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 log_filename = f"crew_output_{timestamp}.log"
 
+clinical_case_input = {
+    "Patient Basic Information": "45-year-old male.",
+    "Chief Complaint": "Chronic dry cough, night sweats, and weight loss over 4 weeks.",
+    "Medical History": "Previously healthy. Worked in healthcare in India 6 months ago. No known TB contact. Non-smoker.",
+    "Physical Examination": "T: 37.5°C, P: 78 bpm, R: 16, BP: 130/80 mmHg. Thin build, no acute distress. Lungs: Bibasilar crackles. No clubbing.",
+    "Auxiliary Examination": "PPD Skin Test: Indeterminate. QuantiFERON-TB Gold: Negative.",
+    "Imaging Examination": "Chest X-ray: Fibrocavitary lesions in upper lobes.",
+    "Laboratory Examination": "WBC: 7.2×10⁹/L, CRP: 15 mg/L, ESR: 50 mm/hr.",
+    "Pathological Examination": "None."
+}
+
+initial_potential_diseases = [
+    "Pulmonary Tuberculosis (Latent/Reactivation)",
+    "Fungal Pneumonia (e.g., Histoplasmosis)",
+    "Chronic Bronchitis with Superimposed Infection",
+    "Lung Cancer with Recurrent Infections"
+]
+
+doctor_1 = create_diagnostic_agent("Dr. Alpha", llm_gpt4o_mini)
+doctor_2 = create_diagnostic_agent("Dr. Beta", llm_gpt4o_mini_2)
+
+task_1 = create_diagnostic_task(doctor_1,clinical_case_input,initial_potential_diseases)
+task_2 = create_diagnostic_task(doctor_2,clinical_case_input,initial_potential_diseases)
+
 crew = Crew(
-    # agents=[doctor_1, doctor_2, doctor_3],
-    # tasks=[task_1, task_2, task_3, consensus_task],
     agents=[doctor_1, doctor_2],
     tasks=[task_1, task_2, consensus_task],
     process=Process.hierarchical,

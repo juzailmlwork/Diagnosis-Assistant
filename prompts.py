@@ -6,9 +6,11 @@ single_shot_disease_only_prompt="""
 
 You have a list of possible diseases: {diseases}
 
-Based on the provided information, carefully analyze the case and return **only the name** of the disease from the given list that best explains the patient’s symptoms and findings. Do not include any explanations or justifications.
-
 Clinical case summary: {medical_history}
+
+Based on the provided information the best possible disease from the given list that best explains the patient’s symptoms and findings is
+
+
 
     """
 

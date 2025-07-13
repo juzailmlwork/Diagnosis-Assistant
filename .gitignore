@@ -13,3 +13,5 @@ results-**
 dataset-cleaning/unused-dataset/**
 data/**
 frontend/venv-**
+frontend/graph-venv/**
+frontend/crew-venv/**

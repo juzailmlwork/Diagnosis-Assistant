@@ -12,6 +12,4 @@ diagnosis-assistant/**
 results-**
 dataset-cleaning/unused-dataset/**
 data/**
-frontend/venv-**
-frontend/graph-venv/**
-frontend/crew-venv/**
+demo/venv/**
